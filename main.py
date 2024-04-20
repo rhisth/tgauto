@@ -5,10 +5,11 @@ from random import choice
 
 from pyrogram import Client
 from pyrogram.handlers import MessageHandler
+from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
 from config import api_id, api_hash, log_path, rules_path, ignore_path
 
-class App:
+class Bot:
     def __init__(self, api_id, api_hash, rules=[], ignore=[], log_path="./logs"):
         self.rules = rules
         self.ignore = ignore
@@ -42,15 +43,15 @@ class App:
                         await message.reply(" ".join(rule[2:]))
                     if rule[0] == "sticker":
                         await message.reply_sticker(choice(rule[2:]))
-        except Exception as ex:
-            self.log(f"{ex.__class__.__name__} {ex}")
+        except ChatWriteForbidden:
+            self.log(f"ОШИБКА: {message.chat.id} Запрещено отправлять сообщения в этом чате.")
 
 def get_file(path):
     with open(path, mode="r", encoding="utf-8") as file:
         return file.read().splitlines()
 
 def get_rules():
-    return [line.split() for line in get_file(rules_path)]
+    return [line.split("#")[0].split() for line in get_file(rules_path)]
 
 def get_ignore():
     return [int(n) for n in get_file(ignore_path)]
@@ -58,7 +59,7 @@ def get_ignore():
 def main():
     rules = get_rules()
     ignore = get_ignore()
-    app = App(api_id, api_hash, rules=rules, ignore=ignore, log_path=log_path)
+    app = Bot(api_id, api_hash, rules=rules, ignore=ignore, log_path=log_path)
     app.run()
 
 if __name__ == "__main__":
