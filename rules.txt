@@ -1,3 +1,3 @@
-react CHATID 😁 🤣
-answer CHATID фыв фывфы вфы вфы вн
-sticker CHATID ./ministr.webp
+react -1234567890 😁 🤣
+answer -1234567890 фыв фывфы вфы вфы вн
+sticker 12345678 ./ministr.webp
